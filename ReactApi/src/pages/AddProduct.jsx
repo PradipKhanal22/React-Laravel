@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { createProduct } from "../services/ProductService";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Package, Loader2, CheckCircle } from "lucide-react";
+import { ArrowLeft, Package, Loader2, CheckCircle, Upload, X } from "lucide-react";
 
 export default function AddProduct() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", price: "", description: "" });
+  const [form, setForm] = useState({ name: "", price: "", description: "", photo: null });
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
@@ -31,7 +32,7 @@ export default function AddProduct() {
         price: Number(form.price),
       });
       setSuccess(true);
-      setTimeout(() => navigate("/"), 1500);
+      setTimeout(() => navigate("/products"), 1500);
     } catch {
       alert("Failed to create product. Please try again.");
     } finally {
@@ -44,6 +45,23 @@ export default function AddProduct() {
     if (errors[field]) {
       setErrors({ ...errors, [field]: "" });
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setForm({ ...form, photo: file });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removePhoto = () => {
+    setForm({ ...form, photo: null });
+    setPreview(null);
   };
 
   return (
@@ -145,6 +163,46 @@ export default function AddProduct() {
                 <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
                   {errors.description}
                 </p>
+              )}
+            </div>
+
+            {/* Photo Upload Field */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Product Photo
+              </label>
+              
+              {!preview ? (
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50/30 transition-all">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="w-12 h-12 text-gray-400 mb-3" />
+                    <p className="mb-2 text-sm text-gray-600 font-semibold">
+                      Click to upload product image
+                    </p>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                  </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              ) : (
+                <div className="relative">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full h-64 object-cover rounded-xl"
+                  />
+                  <button
+                    type="button"
+                    onClick={removePhoto}
+                    className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               )}
             </div>
 

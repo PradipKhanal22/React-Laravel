@@ -29,7 +29,19 @@ export const getProduct = async (id) => {
 
 export const createProduct = async (data) => {
   try {
-    const res = await axios.post(API, data);
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('price', data.price);
+    formData.append('description', data.description);
+    if (data.photo) {
+      formData.append('photo', data.photo);
+    }
+
+    const res = await axios.post(API, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     toast.success("Product created successfully!");
     return res.data;
   } catch (error) {
@@ -39,7 +51,20 @@ export const createProduct = async (data) => {
 
 export const updateProduct = async (id, data) => {
   try {
-    const res = await axios.put(`${API}/${id}`, data);
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('price', data.price);
+    formData.append('description', data.description);
+    if (data.photo) {
+      formData.append('photo', data.photo);
+    }
+    formData.append('_method', 'PUT');
+
+    const res = await axios.post(`${API}/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     toast.success("Product updated successfully!");
     return res.data;
   } catch (error) {

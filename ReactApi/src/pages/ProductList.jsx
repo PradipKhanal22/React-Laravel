@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "../services/ProductService";
 import { Link } from "react-router-dom";
-import { Package, Plus, Edit, Trash2, Loader2, Home } from "lucide-react";
+import { Package, Plus, Edit, Trash2, Loader2, Home, Eye } from "lucide-react";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -96,9 +96,17 @@ export default function ProductList() {
                 key={product.id}
                 className="group relative bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
               >
-                {/* Optional: Product Image Placeholder */}
-                <div className="bg-linear-to-br from-blue-100 to-purple-100 h-48 flex items-center justify-center">
-                  <Package className="w-20 h-20 text-blue-600/30" />
+                {/* Product Image */}
+                <div className="bg-linear-to-br from-blue-100 to-purple-100 h-48 flex items-center justify-center overflow-hidden">
+                  {product.photo_url ? (
+                    <img 
+                      src={product.photo_url} 
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <Package className="w-20 h-20 text-blue-600/30" />
+                  )}
                 </div>
 
                 <div className="p-6">
@@ -117,12 +125,22 @@ export default function ProductList() {
                   </p>
 
                   {/* Action Buttons */}
-                  <div className="mt-6 flex gap-3">
+                  <div className="mt-6 flex gap-2">
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="flex-1"
+                    >
+                      <button className="w-full flex items-center justify-center gap-2 bg-blue-100 text-blue-600 px-3 py-3 rounded-xl font-medium hover:bg-blue-200 transition">
+                        <Eye className="w-4 h-4" />
+                        View
+                      </button>
+                    </Link>
+
                     <Link
                       to={`/edit/${product.id}`}
                       className="flex-1"
                     >
-                      <button className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-medium hover:bg-gray-200 transition">
+                      <button className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-3 py-3 rounded-xl font-medium hover:bg-gray-200 transition">
                         <Edit className="w-4 h-4" />
                         Edit
                       </button>
@@ -131,14 +149,13 @@ export default function ProductList() {
                     <button
                       onClick={() => handleDelete(product.id)}
                       disabled={deletingId === product.id}
-                      className="flex items-center justify-center gap-2 bg-red-100 text-red-600 px-4 py-3 rounded-xl font-medium hover:bg-red-200 disabled:opacity-50 transition"
+                      className="flex items-center justify-center gap-2 bg-red-100 text-red-600 px-3 py-3 rounded-xl font-medium hover:bg-red-200 disabled:opacity-50 transition"
                     >
                       {deletingId === product.id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <Trash2 className="w-4 h-4" />
                       )}
-                      Delete
                     </button>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import ProductList from "./pages/ProductList";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
+import ViewProduct from "./pages/ViewProduct";
 import About from "./pages/About";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/add" element={<AddProduct />} />
+            <Route path="/product/:id" element={<ViewProduct />} />
             <Route path="/edit/:id" element={<EditProduct />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />

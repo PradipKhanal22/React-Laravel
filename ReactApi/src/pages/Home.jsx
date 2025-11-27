@@ -225,7 +225,15 @@ export default function Home() {
                   className="group bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-4 transition-all duration-500"
                 >
                   <div className="relative h-64 bg-linear-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
-                    <Package className="w-32 h-32 text-blue-600/20 group-hover:scale-125 transition-transform duration-700" />
+                    {product.photo_url ? (
+                      <img 
+                        src={product.photo_url} 
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    ) : (
+                      <Package className="w-32 h-32 text-blue-600/20 group-hover:scale-125 transition-transform duration-700" />
+                    )}
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full font-bold text-lg text-blue-600 shadow-lg">
                       Rs. {product.price.toLocaleString()}
                     </div>
