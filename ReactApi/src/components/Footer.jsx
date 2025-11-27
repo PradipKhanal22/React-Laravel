@@ -171,7 +171,6 @@ export default function Footer() {
                 </div>
                 <div>
                   <p className="text-gray-400 leading-relaxed">
-                    123 Business Avenue<br />
                     Kathmandu, Bagmati Province<br />
                     Nepal
                   </p>
@@ -206,7 +205,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-sm">
             <p className="text-gray-500">
               © {currentYear} <span className="text-white font-semibold">ProductHub</span>. 
-              Designed by <span className="text-white font-semibold">Pradip Khanal</span>
+              Designed by <a href="https://pradipkhanal25.com.np" target="_blank" rel="noopener noreferrer"><span className="text-white font-semibold">Pradip Khanal</span></a>
             </p>
             <div className="flex gap-8">
               {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((policy) => (
