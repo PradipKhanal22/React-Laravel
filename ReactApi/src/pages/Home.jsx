@@ -40,30 +40,30 @@ export default function Home() {
       <section className="relative overflow-hidden">
         {/* Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="absolute inset-0 bg-cover bg-center opacity-70"
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80')"
           }}
         />
-        <div className="absolute inset-0 bg-linear-to-br from-blue-600/20 via-transparent to-purple-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-br from-blue-900/60 to-purple-900/60 pointer-events-none" />
         
         <div className="relative max-w-7xl mx-auto px-6 py-14 lg:py-14">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left - Content */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-md border border-white/50 px-5 py-3 rounded-full text-sm font-semibold text-blue-700 shadow-lg">
+              <div className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-md border border-white/50 px-5 py-3 rounded-full text-sm font-semibold text-blue-700 shadow-lg">
                 <Sparkles className="w-5 h-5 text-yellow-500" />
                 The Modern Product Management Platform
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-2xl">
                 Manage Products
-                <span className="block text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">
+                <span className="block text-transparent bg-clip-text bg-linear-to-r from-yellow-300 to-orange-400">
                   Like a Pro
                 </span>
               </h1>
 
-              <p className="text-xl text-gray-600 leading-relaxed max-w-2xl">
+              <p className="text-xl text-white leading-relaxed max-w-2xl drop-shadow-lg">
                 Beautiful, fast, and intuitive. Add, edit, and showcase your products with a platform built for the modern era.
               </p>
 
@@ -87,19 +87,19 @@ export default function Home() {
               <div className="grid grid-cols-3 gap-8 pt-10">
                 <div className="text-center">
                   <div className="text-4xl font-bold text-gray-900">{products.length}+</div>
-                  <div className="text-gray-600">Active Products</div>
+                  <div className="text-white">Active Products</div>
                 </div>
                 <div className="text-center">
                   <div className="text-4xl font-bold text-green-600 flex items-center justify-center gap-1">
                     <CheckCircle className="w-8 h-8" /> 100%
                   </div>
-                  <div className="text-gray-600">Uptime</div>
+                  <div className="text-white">Uptime</div>
                 </div>
                 <div className="text-center">
                   <div className="text-4xl font-bold text-purple-600">
                     <Zap className="w-10 h-10 mx-auto" />
                   </div>
-                  <div className="text-gray-600">Lightning Fast</div>
+                  <div className="text-white">Lightning Fast</div>
                 </div>
               </div>
             </div>
