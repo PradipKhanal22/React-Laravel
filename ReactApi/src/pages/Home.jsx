@@ -47,7 +47,7 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-linear-to-br from-blue-600/20 via-transparent to-purple-600/10 pointer-events-none" />
         
-        <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
+        <div className="relative max-w-7xl mx-auto px-6 py-14 lg:py-14">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left - Content */}
             <div className="space-y-8">
@@ -56,7 +56,7 @@ export default function Home() {
                 The Modern Product Management Platform
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Manage Products
                 <span className="block text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">
                   Like a Pro

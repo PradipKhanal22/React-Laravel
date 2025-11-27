@@ -6,12 +6,19 @@ export default function Services() {
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50">
       {/* Hero Section */}
       <section className="relative py-20 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-br from-blue-600/10 to-purple-600/10" />
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-70"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&q=80')"
+          }}
+        />
+        <div className="absolute inset-0 bg-linear-to-br from-blue-900/60 to-purple-900/60" />
         <div className="relative max-w-5xl mx-auto text-center">
-          <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            Our <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">Services</span>
+          <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl">
+            Our <span className="text-transparent bg-clip-text bg-linear-to-r from-yellow-300 to-orange-400">Services</span>
           </h1>
-          <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+          <p className="text-xl text-white leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
             Comprehensive solutions to manage, track, and grow your product inventory with ease.
           </p>
         </div>
