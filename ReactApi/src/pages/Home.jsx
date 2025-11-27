@@ -279,18 +279,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-16 px-6 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Package className="w-10 h-10 text-blue-500" />
-            <span className="text-3xl font-bold text-white">ProductFlow</span>
-          </div>
-          <p className="text-lg mb-4">The future of product management is here.</p>
-          <p className="text-sm">© 2025 ProductFlow. Crafted with love & React.</p>
-        </div>
-      </footer>
     </div>
   );
 }
