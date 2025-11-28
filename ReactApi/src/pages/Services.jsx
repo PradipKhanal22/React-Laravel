@@ -7,7 +7,7 @@ export default function Services() {
       {/* Hero Section */}
       <section className="relative py-20 px-6 overflow-hidden">
         {/* Background Image */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center opacity-70"
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&q=80')"
@@ -84,7 +84,7 @@ export default function Services() {
                 <ul className="space-y-3">
                   {service.features.map((feature, j) => (
                     <li key={j} className="flex items-center gap-3 text-gray-700">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -143,17 +143,16 @@ export default function Services() {
                 <ul className="space-y-4 mb-8">
                   {plan.features.map((feature, j) => (
                     <li key={j} className="flex items-center gap-3 text-gray-700">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
                       <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
                 <Link to="/contact">
-                  <button className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
-                    plan.popular
+                  <button className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${plan.popular
                       ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl"
                       : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  }`}>
+                    }`}>
                     Get Started
                   </button>
                 </Link>
