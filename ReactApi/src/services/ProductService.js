@@ -1,7 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-
-const API = "http://127.0.0.1:8000/api/products";
+import { PRODUCT_ENDPOINTS, PRODUCT_HEADERS } from "../constants/api";
 
 const handleError = (error) => {
   console.error(error);
@@ -10,7 +9,9 @@ const handleError = (error) => {
 
 export const getProducts = async () => {
   try {
-    const res = await axios.get(API);
+    const res = await axios.get(PRODUCT_ENDPOINTS.GET_ALL, {
+      headers: PRODUCT_HEADERS.JSON,
+    });
     return res.data;
   } catch (error) {
     handleError(error);
@@ -20,7 +21,9 @@ export const getProducts = async () => {
 
 export const getProduct = async (id) => {
   try {
-    const res = await axios.get(`${API}/${id}`);
+    const res = await axios.get(PRODUCT_ENDPOINTS.GET_BY_ID(id), {
+      headers: PRODUCT_HEADERS.JSON,
+    });
     return res.data;
   } catch (error) {
     handleError(error);
@@ -37,10 +40,8 @@ export const createProduct = async (data) => {
       formData.append('photo', data.photo);
     }
 
-    const res = await axios.post(API, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const res = await axios.post(PRODUCT_ENDPOINTS.CREATE, formData, {
+      headers: PRODUCT_HEADERS.MULTIPART,
     });
     toast.success("Product created successfully!");
     return res.data;
@@ -60,10 +61,8 @@ export const updateProduct = async (id, data) => {
     }
     formData.append('_method', 'PUT');
 
-    const res = await axios.post(`${API}/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const res = await axios.post(PRODUCT_ENDPOINTS.UPDATE(id), formData, {
+      headers: PRODUCT_HEADERS.MULTIPART,
     });
     toast.success("Product updated successfully!");
     return res.data;
@@ -74,7 +73,9 @@ export const updateProduct = async (id, data) => {
 
 export const deleteProduct = async (id) => {
   try {
-    await axios.delete(`${API}/${id}`);
+    await axios.delete(PRODUCT_ENDPOINTS.DELETE(id), {
+      headers: PRODUCT_HEADERS.JSON,
+    });
     toast.success("Product deleted successfully!");
   } catch (error) {
     handleError(error);
