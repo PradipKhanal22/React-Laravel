@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProduct, updateProduct } from "../services/ProductService";
+import { getProduct, updateProduct } from "../../services/ProductService";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Package, Loader2, CheckCircle, Edit3, Upload, X } from "lucide-react";
 

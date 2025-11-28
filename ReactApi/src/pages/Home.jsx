@@ -68,7 +68,7 @@ export default function Home() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Link to="/add">
+                <Link to="/products/add">
                   <button className="group flex items-center gap-3 bg-linear-to-r from-blue-600 to-blue-700 text-white px-8 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transform transition-all duration-300">
                     <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />
                     Add Your First Product
@@ -210,7 +210,7 @@ export default function Home() {
               <Package className="w-24 h-24 text-gray-300 mx-auto mb-6" />
               <h3 className="text-3xl font-bold text-gray-700 mb-4">No products yet</h3>
               <p className="text-gray-600 mb-8 text-lg">Be the first to add something amazing!</p>
-              <Link to="/add">
+              <Link to="/products/add">
                 <button className="inline-flex items-center gap-3 bg-linear-to-r from-blue-600 to-purple-600 text-white px-8 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
                   <Plus className="w-6 h-6" />
                   Add Your First Product
@@ -270,7 +270,7 @@ export default function Home() {
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
               Join thousands of happy users who trust our platform every day.
             </p>
-            <Link to="/add">
+            <Link to="/products/add">
               <button className="inline-flex items-center gap-4 bg-white text-blue-600 px-10 py-6 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-2xl hover:scale-110 transform transition-all duration-300">
                 <Plus className="w-8 h-8" />
                 Add Your First Product — It's Free!

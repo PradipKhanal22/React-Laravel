@@ -49,7 +49,7 @@ export default function Navbar() {
           </div>
 
           {/* CTA Button */}
-          <Link to="/add" className="hidden md:block">
+          <Link to="/products/add" className="hidden md:block">
             <button className="bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
               Add Product
             </button>
@@ -82,7 +82,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link to="/add" onClick={() => setIsOpen(false)}>
+            <Link to="/products/add" onClick={() => setIsOpen(false)}>
               <button className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg mt-2">
                 Add Product
               </button>

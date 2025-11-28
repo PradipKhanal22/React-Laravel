@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProduct, deleteProduct } from "../services/ProductService";
+import { getProduct, deleteProduct } from "../../services/ProductService";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { 
   ArrowLeft, 
@@ -170,7 +170,7 @@ export default function ViewProduct() {
               {/* Action Buttons */}
               <div className="flex gap-4 pt-6">
                 <Link
-                  to={`/edit/${product.id}`}
+                  to={`/products/${product.id}/edit`}
                   className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-amber-500 to-orange-600 text-white py-4 rounded-xl font-semibold hover:from-amber-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   <Edit className="w-5 h-5" />

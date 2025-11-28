@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProducts, deleteProduct } from "../services/ProductService";
+import { getProducts, deleteProduct } from "../../services/ProductService";
 import { Link } from "react-router-dom";
 import { Package, Plus, Edit, Trash2, Loader2, Home, Eye } from "lucide-react";
 
@@ -60,7 +60,7 @@ export default function ProductList() {
             <p className="text-gray-600 mt-2">Manage your product inventory</p>
           </div>
 
-          <Link to="/add">
+          <Link to="/products/add">
             <button className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-800 transform hover:-translate-y-0.5 transition-all duration-200">
               <Plus className="w-5 h-5" />
               Add New Product
@@ -127,7 +127,7 @@ export default function ProductList() {
                   {/* Action Buttons */}
                   <div className="mt-6 flex gap-2">
                     <Link
-                      to={`/product/${product.id}`}
+                      to={`/products/${product.id}`}
                       className="flex-1"
                     >
                       <button className="w-full flex items-center justify-center gap-2 bg-blue-100 text-blue-600 px-3 py-3 rounded-xl font-medium hover:bg-blue-200 transition">
@@ -137,7 +137,7 @@ export default function ProductList() {
                     </Link>
 
                     <Link
-                      to={`/edit/${product.id}`}
+                      to={`/products/${product.id}/edit`}
                       className="flex-1"
                     >
                       <button className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-3 py-3 rounded-xl font-medium hover:bg-gray-200 transition">

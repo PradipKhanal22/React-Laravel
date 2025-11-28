@@ -4,10 +4,10 @@ import { ToastContainer } from 'react-toastify';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import ProductList from "./pages/ProductList";
-import AddProduct from "./pages/AddProduct";
-import EditProduct from "./pages/EditProduct";
-import ViewProduct from "./pages/ViewProduct";
+import ProductList from "./pages/products/ProductList";
+import AddProduct from "./pages/products/AddProduct";
+import EditProduct from "./pages/products/EditProduct";
+import ViewProduct from "./pages/products/ViewProduct";
 import About from "./pages/About";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
@@ -21,9 +21,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductList />} />
-            <Route path="/add" element={<AddProduct />} />
-            <Route path="/product/:id" element={<ViewProduct />} />
-            <Route path="/edit/:id" element={<EditProduct />} />
+            <Route path="/products/add" element={<AddProduct />} />
+            <Route path="/products/:id" element={<ViewProduct />} />
+            <Route path="/products/:id/edit" element={<EditProduct />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<Contact />} />

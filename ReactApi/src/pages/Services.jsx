@@ -174,7 +174,7 @@ export default function Services() {
               Start managing your products like a pro today. No credit card required.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/add">
+              <Link to="/products/add">
                 <button className="inline-flex items-center gap-3 bg-white text-blue-600 px-8 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
                   Start Free Trial
                   <ArrowRight className="w-5 h-5" />
