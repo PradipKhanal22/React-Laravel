@@ -16,6 +16,9 @@ import Contact from "./pages/Contact";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
+import CategoryList from "./pages/categories/CategoryList";
+import AddCategory from "./pages/categories/AddCategory";
+import EditCategory from "./pages/categories/EditCategory";
 
 export default function App() {
   return (
@@ -60,6 +63,30 @@ export default function App() {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <EditProduct />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categories"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <CategoryList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categories/add"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AddCategory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categories/:id/edit"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <EditCategory />
               </ProtectedRoute>
             }
           />

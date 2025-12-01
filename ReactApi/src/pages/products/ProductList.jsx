@@ -253,12 +253,6 @@ export default function ProductListTable() {
 
                         <td className="px-6 py-5">
                           <div className="flex items-center justify-center gap-2">
-                            <Link to={`/admin/products/${product.id}`}>
-                              <button className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition">
-                                <Eye className="w-5 h-5" />
-                              </button>
-                            </Link>
-
                             <Link to={`/admin/products/${product.id}/edit`}>
                               <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-700 transition">
                                 <Edit className="w-5 h-5" />

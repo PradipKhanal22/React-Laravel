@@ -9,7 +9,8 @@ import {
   Settings, 
   BarChart3,
   Menu,
-  X
+  X,
+  FolderOpen
 } from 'lucide-react';
 
 const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -25,6 +26,11 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
       name: 'Products',
       path: '/admin/products',
       icon: Package,
+    },
+    {
+      name: 'Categories',
+      path: '/admin/categories',
+      icon: FolderOpen,
     },
     {
       name: 'Orders',
