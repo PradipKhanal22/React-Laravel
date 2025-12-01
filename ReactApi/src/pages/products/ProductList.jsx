@@ -1,21 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getProducts, deleteProduct } from "../../services/ProductService";
 import { Link } from "react-router-dom";
-import { Package, Plus, Edit, Trash2, Loader2, Home, Eye } from "lucide-react";
+import {
+  Package,
+  Plus,
+  Edit,
+  Trash2,
+  Loader2,
+  Eye,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ArrowUpDown,
+} from "lucide-react";
 import AdminLayout from "../../admin/components/AdminLayout";
 
-export default function ProductList() {
+export default function ProductListTable() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" });
+
+  const itemsPerPage = 10;
 
   const loadProducts = async () => {
     setLoading(true);
     try {
       const data = await getProducts();
       setProducts(data);
-    } catch {
-      console.error("Failed to load products");
+    } catch (err) {
+      console.error("Failed to load products", err);
     } finally {
       setLoading(false);
     }
@@ -39,17 +57,72 @@ export default function ProductList() {
     }
   };
 
+  // Sorting function
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Search & Filter + Sort + Pagination
+  const filteredAndSortedProducts = useMemo(() => {
+    let filtered = products;
+
+    if (searchTerm) {
+      filtered = products.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sorting
+    filtered = [...filtered].sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    return filtered;
+  }, [products, searchTerm, sortConfig]);
+
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
+  const paginatedProducts = filteredAndSortedProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const SortableHeader = ({ children, sortKey }) => (
+    <th
+      onClick={() => requestSort(sortKey)}
+      className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 px-6 py-4 transition"
+    >
+      <div className="flex items-center gap-1">
+        {children}
+        <ArrowUpDown className={`w-4 h-4 transition-transform ${
+          sortConfig.key === sortKey ? "text-blue-600" : "text-gray-400"
+        } ${sortConfig.direction === "desc" ? "rotate-180" : ""}`} />
+      </div>
+    </th>
+  );
+
   return (
     <AdminLayout>
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
               <Package className="w-10 h-10 text-blue-600" />
               All Products
             </h1>
-            <p className="text-gray-600 mt-2">Manage your product inventory</p>
+            <p className="text-gray-600 mt-2">Manage and monitor your product inventory</p>
           </div>
 
           <Link to="/admin/products/add">
@@ -60,103 +133,205 @@ export default function ProductList() {
           </Link>
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search products by name or description..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            />
+          </div>
+        </div>
+
         {/* Loading State */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-white/70 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 animate-pulse"
-              >
-                <div className="h-6 bg-gray-300 rounded-lg mb-4"></div>
-                <div className="h-8 bg-gray-400 rounded w-24 mb-4"></div>
-                <div className="h-20 bg-gray-200 rounded-lg"></div>
-              </div>
-            ))}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="animate-pulse">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="px-6 py-5 border-b border-gray-100">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mt-3"></div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-32 h-32 mx-auto mb-6" />
-            <h3 className="text-2xl font-semibold text-gray-700">No products yet</h3>
+          <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-200">
+            <Package className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-2xl font-semibold text-gray-700">No products found</h3>
             <p className="text-gray-500 mt-2">Start by adding your first product!</p>
           </div>
         ) : (
-          /* Product Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="group relative bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-              >
-                {/* Product Image */}
-                <div className="bg-linear-to-br from-blue-100 to-purple-100 h-48 flex items-center justify-center overflow-hidden">
-                  {product.photo_url ? (
-                    <img 
-                      src={product.photo_url} 
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  ) : (
-                    <Package className="w-20 h-20 text-blue-600/30" />
-                  )}
-                </div>
+          <>
+            {/* DataTable */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <SortableHeader sortKey="name">Product Name</SortableHeader>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Image
+                      </th>
+                      <SortableHeader sortKey="price">Price</SortableHeader>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Category
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Stock
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {paginatedProducts.map((product) => (
+                      <tr
+                        key={product.id}
+                        className="hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <td className="px-6 py-5">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900 line-clamp-2">
+                              {product.name}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              ID: {product.id}
+                            </div>
+                          </div>
+                        </td>
 
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition">
-                    {product.name}
-                  </h2>
+                        <td className="px-6 py-5">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
+                            {product.photo_url ? (
+                              <img
+                                src={product.photo_url}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                <Package className="w-8 h-8 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                        </td>
 
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-3xl font-bold text-gray-900">
-                      Rs. {product.price.toLocaleString()}
-                    </span>
-                  </div>
+                        <td className="px-6 py-5">
+                          <span className="text-lg font-bold text-gray-900">
+                            Rs. {product.price?.toLocaleString() || "N/A"}
+                          </span>
+                        </td>
 
-                  <p className="mt-3 text-gray-600 text-sm line-clamp-3">
-                    {product.description || "No description available."}
+                        <td className="px-6 py-5">
+                          <span className="text-sm text-gray-700">
+                            {product.category || "Uncategorized"}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-5">
+                          <span
+                            className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                              product.stock > 10
+                                ? "bg-green-100 text-green-800"
+                                : product.stock > 0
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {product.stock || 0} in stock
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-5">
+                          <div className="flex items-center justify-center gap-2">
+                            <Link to={`/admin/products/${product.id}`}>
+                              <button className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition">
+                                <Eye className="w-5 h-5" />
+                              </button>
+                            </Link>
+
+                            <Link to={`/admin/products/${product.id}/edit`}>
+                              <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-700 transition">
+                                <Edit className="w-5 h-5" />
+                              </button>
+                            </Link>
+
+                            <button
+                              onClick={() => handleDelete(product.id)}
+                              disabled={deletingId === product.id}
+                              className="p-2 rounded-lg hover:bg-red-100 text-red-600 disabled:opacity-50 transition"
+                            >
+                              {deletingId === product.id ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-5 h-5" />
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <p className="text-sm text-gray-600">
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                    {Math.min(currentPage * itemsPerPage, filteredAndSortedProducts.length)} of{" "}
+                    {filteredAndSortedProducts.length} products
                   </p>
 
-                  {/* Action Buttons */}
-                  <div className="mt-6 flex gap-2">
-                    <Link
-                      to={`/admin/products/${product.id}`}
-                      className="flex-1"
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(1)}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
                     >
-                      <button className="w-full flex items-center justify-center gap-2 bg-blue-100 text-blue-600 px-3 py-3 rounded-xl font-medium hover:bg-blue-200 transition">
-                        <Eye className="w-4 h-4" />
-                        View
-                      </button>
-                    </Link>
+                      <ChevronsLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
 
-                    <Link
-                      to={`/admin/products/${product.id}/edit`}
-                      className="flex-1"
-                    >
-                      <button className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-3 py-3 rounded-xl font-medium hover:bg-gray-200 transition">
-                        <Edit className="w-4 h-4" />
-                        Edit
-                      </button>
-                    </Link>
+                    <span className="px-4 py-2 bg-white rounded-lg text-sm font-medium">
+                      Page {currentPage} of {totalPages}
+                    </span>
 
                     <button
-                      onClick={() => handleDelete(product.id)}
-                      disabled={deletingId === product.id}
-                      className="flex items-center justify-center gap-2 bg-red-100 text-red-600 px-3 py-3 rounded-xl font-medium hover:bg-red-200 disabled:opacity-50 transition"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
                     >
-                      {deletingId === product.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
+                    >
+                      <ChevronsRight className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-
-                {/* Hover overlay effect */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-2xl"></div>
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </AdminLayout>
