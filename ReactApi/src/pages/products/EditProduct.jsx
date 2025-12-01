@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getProduct, updateProduct } from "../../services/ProductService";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Package, Loader2, CheckCircle, Edit3, Upload, X } from "lucide-react";
+import AdminLayout from "../../admin/components/AdminLayout";
 
 export default function EditProduct() {
   const { id } = useParams();
@@ -58,7 +59,7 @@ export default function EditProduct() {
         price: Number(form.price),
       });
       setSuccess(true);
-      setTimeout(() => navigate("/products"), 1500);
+      setTimeout(() => navigate("/admin/products"), 2000);
     } catch {
       alert("Failed to update product. Please try again.");
     } finally {
@@ -89,11 +90,11 @@ export default function EditProduct() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <AdminLayout>
+      <div className="max-w-2xl">
         {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/admin/products")}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -288,6 +289,6 @@ export default function EditProduct() {
           </div>
         )}
       </div>
-    </div>
+    </AdminLayout>
   );
 }

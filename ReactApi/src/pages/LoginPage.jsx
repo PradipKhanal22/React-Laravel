@@ -1,23 +1,48 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const LoginPage = () => {
+    const navigate = useNavigate();
+    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setError("");
 
-        setTimeout(() => {
-            console.log("Login attempt:", { email, password, rememberMe });
+        try {
+            const result = await login({ email, password });
+            
+            console.log('Login result:', result); // Debug log
+            
+            if (result.success) {
+                const { user } = result;
+                
+                console.log('User data:', user); // Debug log
+                
+                // Check if admin and redirect accordingly
+                if (user.role === 'admin' || user.email === 'dev@bits.com') {
+                    console.log('Redirecting to admin dashboard'); // Debug log
+                    navigate('/admin/dashboard');
+                } else {
+                    console.log('Redirecting to home'); // Debug log
+                    navigate('/');
+                }
+            } else {
+                setError("Login failed. Please try again.");
+            }
+        } catch {
+            setError("Invalid email or password");
+        } finally {
             setIsLoading(false);
-            alert("Login successful! (Demo mode)");
-            // navigate("/dashboard");
-        }, 1500);
+        }
     };
 
     return (
@@ -91,12 +116,19 @@ const LoginPage = () => {
                                 </Link>
                             </div>
 
+                            {/* Error Message */}
+                            {error && (
+                                <div className="text-red-600 text-center bg-red-50 border border-red-200 rounded-lg p-3">
+                                    {error}
+                                </div>
+                            )}
+
                             {/* Submit Button - Fixed Gradient */}
                             <div className="flex justify-center items-center">
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-32 py-3 mt-1 bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xl rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                                    className="w-full py-5 mt-1 bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xl rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
                                 >
                                     {isLoading ? (
                                         <>

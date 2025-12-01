@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "../../services/ProductService";
 import { Link } from "react-router-dom";
 import { Package, Plus, Edit, Trash2, Loader2, Home, Eye } from "lucide-react";
+import AdminLayout from "../../admin/components/AdminLayout";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -39,17 +40,8 @@ export default function ProductList() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50">
-      <div className="p-6 max-w-7xl mx-auto">
-        {/* Back to Home */}
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-        >
-          <Home className="w-5 h-5" />
-          Back to Home
-        </Link>
-
+    <AdminLayout>
+      <div className="max-w-7xl">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
           <div>
@@ -60,7 +52,7 @@ export default function ProductList() {
             <p className="text-gray-600 mt-2">Manage your product inventory</p>
           </div>
 
-          <Link to="/products/add">
+          <Link to="/admin/products/add">
             <button className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-800 transform hover:-translate-y-0.5 transition-all duration-200">
               <Plus className="w-5 h-5" />
               Add New Product
@@ -127,7 +119,7 @@ export default function ProductList() {
                   {/* Action Buttons */}
                   <div className="mt-6 flex gap-2">
                     <Link
-                      to={`/products/${product.id}`}
+                      to={`/admin/products/${product.id}`}
                       className="flex-1"
                     >
                       <button className="w-full flex items-center justify-center gap-2 bg-blue-100 text-blue-600 px-3 py-3 rounded-xl font-medium hover:bg-blue-200 transition">
@@ -137,7 +129,7 @@ export default function ProductList() {
                     </Link>
 
                     <Link
-                      to={`/products/${product.id}/edit`}
+                      to={`/admin/products/${product.id}/edit`}
                       className="flex-1"
                     >
                       <button className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-3 py-3 rounded-xl font-medium hover:bg-gray-200 transition">
@@ -167,6 +159,6 @@ export default function ProductList() {
           </div>
         )}
       </div>
-    </div>
+    </AdminLayout>
   );
 }

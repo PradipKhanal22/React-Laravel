@@ -12,6 +12,13 @@ export {
   default as categoryApi 
 } from './categoryApi';
 
+export { 
+  AUTH_ENDPOINTS, 
+  AUTH_HEADERS,
+  USER_ROLES,
+  default as authApi 
+} from './authApi';
+
 // Common API configuration
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 

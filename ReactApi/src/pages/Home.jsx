@@ -45,7 +45,7 @@ export default function Home() {
             backgroundImage: "url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80')"
           }}
         />
-        <div className="absolute inset-0 bg-linear-to-br from-blue-900/60 to-purple-900/60 pointer-events-none" />
+        <div className="absolute inset-0  pointer-events-none" />
         
         <div className="relative max-w-7xl mx-auto px-6 py-14 lg:py-14">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -56,7 +56,7 @@ export default function Home() {
                 The Modern Product Management Platform
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight drop-shadow-2xl">
+              <h1 className="text-5xl lg:text-6xl font-bold text-black leading-tight drop-shadow-2xl">
                 Manage Products
                 <span className="block text-transparent bg-clip-text bg-linear-to-r from-yellow-300 to-orange-400">
                   Like a Pro

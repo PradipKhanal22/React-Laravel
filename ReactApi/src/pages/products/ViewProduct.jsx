@@ -13,6 +13,7 @@ import {
   Calendar,
   Tag
 } from "lucide-react";
+import AdminLayout from "../../admin/components/AdminLayout";
 
 export default function ViewProduct() {
   const { id } = useParams();
@@ -29,7 +30,7 @@ export default function ViewProduct() {
         setProduct(data);
       } catch {
         alert("Failed to load product. Please try again.");
-        navigate("/products");
+        navigate("/admin/products");
       } finally {
         setLoading(false);
       }
@@ -45,7 +46,7 @@ export default function ViewProduct() {
     try {
       await deleteProduct(id);
       alert("Product deleted successfully!");
-      navigate("/products");
+      navigate("/admin/products");
     } catch {
       alert("Failed to delete product. Please try again.");
     } finally {
@@ -69,11 +70,11 @@ export default function ViewProduct() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 py-12 px-4">
-      <div className="max-w-5xl mx-auto">
+    <AdminLayout>
+      <div className="max-w-5xl">
         {/* Back Button */}
         <button
-          onClick={() => navigate("/products")}
+          onClick={() => navigate("/admin/products")}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors group"
         >
           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -170,7 +171,7 @@ export default function ViewProduct() {
               {/* Action Buttons */}
               <div className="flex gap-4 pt-6">
                 <Link
-                  to={`/products/${product.id}/edit`}
+                  to={`/admin/products/${product.id}/edit`}
                   className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-amber-500 to-orange-600 text-white py-4 rounded-xl font-semibold hover:from-amber-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   <Edit className="w-5 h-5" />
@@ -228,6 +229,6 @@ export default function ViewProduct() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

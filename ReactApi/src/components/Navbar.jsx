@@ -56,11 +56,6 @@ export default function Navbar() {
                 Login
               </button>
             </Link>
-            <Link to="/products/add">
-              <button className="bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
-                Add Product
-              </button>
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -94,11 +89,6 @@ export default function Navbar() {
               <button className="w-full flex items-center justify-center gap-2 text-gray-700 border-2 border-gray-300 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all mt-2">
                 <LogIn className="w-5 h-5" />
                 Login
-              </button>
-            </Link>
-            <Link to="/products/add" onClick={() => setIsOpen(false)}>
-              <button className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg mt-2">
-                Add Product
               </button>
             </Link>
           </div>
