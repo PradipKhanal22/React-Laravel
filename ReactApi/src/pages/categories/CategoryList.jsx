@@ -14,6 +14,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ArrowUpDown,
+  X,
 } from "lucide-react";
 import AdminLayout from "../../admin/components/AdminLayout";
 
@@ -25,6 +26,10 @@ export default function CategoryListTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: "priority", direction: "asc" });
 
+  // Modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+
   const itemsPerPage = 10;
 
   const loadCategories = async () => {
@@ -33,8 +38,8 @@ export default function CategoryListTable() {
       const data = await getCategories();
       const sorted = data.sort((a, b) => a.priority - b.priority);
       setCategories(sorted);
-    } catch (error) {
-      console.error("Failed to load categories:", error);
+    } catch {
+      console.error("Failed to load categories");
     } finally {
       setLoading(false);
     }
@@ -44,14 +49,26 @@ export default function CategoryListTable() {
     loadCategories();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
+  const openDeleteModal = (category) => {
+    setCategoryToDelete(category);
+    setShowDeleteModal(true);
+  };
 
-    setDeletingId(id);
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setCategoryToDelete(null);
+    setDeletingId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
+
+    setDeletingId(categoryToDelete.id);
     try {
-      await deleteCategory(id);
-      setCategories(categories.filter((c) => c.id !== id));
-    } catch (error) {
+      await deleteCategory(categoryToDelete.id);
+      setCategories(categories.filter((c) => c.id !== categoryToDelete.id));
+      closeDeleteModal();
+    } catch {
       alert("Failed to delete category");
     } finally {
       setDeletingId(null);
@@ -66,7 +83,6 @@ export default function CategoryListTable() {
     return { bg: "bg-green-100", text: "text-green-800", label: "Low" };
   };
 
-  // Sorting handler
   const requestSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -75,20 +91,16 @@ export default function CategoryListTable() {
     setSortConfig({ key, direction });
   };
 
-  // Search + Sort + Pagination
   const filteredAndSortedCategories = useMemo(() => {
     let filtered = categories;
-
     if (searchTerm) {
       filtered = categories.filter((cat) =>
         cat.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     return [...filtered].sort((a, b) => {
       const aVal = a[sortConfig.key];
       const bVal = b[sortConfig.key];
-
       if (aVal < bVal) return sortConfig.direction === "asc" ? -1 : 1;
       if (aVal > bVal) return sortConfig.direction === "asc" ? 1 : -1;
       return 0;
@@ -155,7 +167,7 @@ export default function CategoryListTable() {
           </div>
         </div>
 
-        {/* Loading State */}
+        {/* Loading & Empty States */}
         {loading ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="animate-pulse">
@@ -195,32 +207,23 @@ export default function CategoryListTable() {
                     {paginatedCategories.map((category) => {
                       const priority = getPriorityBadge(category.priority);
                       return (
-                        <tr
-                          key={category.id}
-                          className="hover:bg-gray-50 transition-colors duration-150"
-                        >
+                        <tr key={category.id} className="hover:bg-gray-50 transition-colors duration-150">
                           <td className="px-6 py-5">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-linear-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
                                 <FolderOpen className="w-5 h-5 text-blue-600" />
                               </div>
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
-                                  {category.name}
-                                </div>
+                                <div className="text-sm font-medium text-gray-900">{category.name}</div>
                                 <div className="text-xs text-gray-500">ID: {category.id}</div>
                               </div>
                             </div>
                           </td>
 
                           <td className="px-6 py-5">
-                            <div className="flex items-center gap-3">
-                              <span
-                                className={`inline-flex px-3 py-1.5 rounded-full text-xs font-bold border ${priority.bg} ${priority.text}`}
-                              >
-                                {priority.label} (#{category.priority})
-                              </span>
-                            </div>
+                            <span className={`inline-flex px-3 py-1.5 rounded-full text-xs font-bold border ${priority.bg} ${priority.text}`}>
+                              {priority.label} (#{category.priority})
+                            </span>
                           </td>
 
                           <td className="px-6 py-5">
@@ -244,15 +247,10 @@ export default function CategoryListTable() {
                               </Link>
 
                               <button
-                                onClick={() => handleDelete(category.id)}
-                                disabled={deletingId === category.id}
-                                className="p-2 rounded-lg hover:bg-red-100 text-red-600 disabled:opacity-50 transition"
+                                onClick={() => openDeleteModal(category)}
+                                className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition"
                               >
-                                {deletingId === category.id ? (
-                                  <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                  <Trash2 className="w-5 h-5" />
-                                )}
+                                <Trash2 className="w-5 h-5" />
                               </button>
                             </div>
                           </td>
@@ -271,39 +269,20 @@ export default function CategoryListTable() {
                     {Math.min(currentPage * itemsPerPage, filteredAndSortedCategories.length)} of{" "}
                     {filteredAndSortedCategories.length} categories
                   </p>
-
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage(1)}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronsLeft className="w-5 h-5" />
                     </button>
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-
                     <span className="px-4 py-2 bg-white rounded-lg text-sm font-medium shadow-sm">
                       Page {currentPage} of {totalPages}
                     </span>
-
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <button
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronsRight className="w-5 h-5" />
                     </button>
                   </div>
@@ -311,6 +290,56 @@ export default function CategoryListTable() {
               )}
             </div>
           </>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in fade-in zoom-in duration-200">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Delete Category?</h2>
+                <button
+                  onClick={closeDeleteModal}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="mb-8">
+                <p className="text-gray-600">
+                  Are you sure you want to delete the category
+                  <span className="font-semibold text-gray-900"> "{categoryToDelete?.name}"</span>?
+                </p>
+                <p className="text-sm text-red-600 mt-3">
+                  This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-6 py-3 rounded-xl font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={deletingId !== null}
+                  className="px-6 py-3 rounded-xl font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-70 disabled:cursor-not-allowed transition flex items-center gap-2"
+                >
+                  {deletingId ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete Category"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </AdminLayout>

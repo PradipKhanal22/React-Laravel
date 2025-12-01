@@ -14,6 +14,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ArrowUpDown,
+  X,
 } from "lucide-react";
 import AdminLayout from "../../admin/components/AdminLayout";
 
@@ -25,6 +26,10 @@ export default function ProductListTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" });
 
+  // Modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+
   const itemsPerPage = 10;
 
   const loadProducts = async () => {
@@ -32,8 +37,8 @@ export default function ProductListTable() {
     try {
       const data = await getProducts();
       setProducts(data);
-    } catch (err) {
-      console.error("Failed to load products", err);
+    } catch {
+      console.error("Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -43,13 +48,25 @@ export default function ProductListTable() {
     loadProducts();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+  const openDeleteModal = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
 
-    setDeletingId(id);
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
+    setDeletingId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+
+    setDeletingId(productToDelete.id);
     try {
-      await deleteProduct(id);
-      setProducts(products.filter((p) => p.id !== id));
+      await deleteProduct(productToDelete.id);
+      setProducts(products.filter((p) => p.id !== productToDelete.id));
+      closeDeleteModal();
     } catch {
       alert("Failed to delete product");
     } finally {
@@ -66,7 +83,7 @@ export default function ProductListTable() {
     setSortConfig({ key, direction });
   };
 
-  // Search & Filter + Sort + Pagination
+  // Search & Sort + Pagination
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products;
 
@@ -78,18 +95,13 @@ export default function ProductListTable() {
       );
     }
 
-    // Sorting
-    filtered = [...filtered].sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? -1 : 1;
-      }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? 1 : -1;
-      }
+    return [...filtered].sort((a, b) => {
+      const aVal = a[sortConfig.key] ?? "";
+      const bVal = b[sortConfig.key] ?? "";
+      if (aVal < bVal) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortConfig.direction === "asc" ? 1 : -1;
       return 0;
     });
-
-    return filtered;
   }, [products, searchTerm, sortConfig]);
 
   const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
@@ -105,9 +117,11 @@ export default function ProductListTable() {
     >
       <div className="flex items-center gap-1">
         {children}
-        <ArrowUpDown className={`w-4 h-4 transition-transform ${
-          sortConfig.key === sortKey ? "text-blue-600" : "text-gray-400"
-        } ${sortConfig.direction === "desc" ? "rotate-180" : ""}`} />
+        <ArrowUpDown
+          className={`w-4 h-4 transition-transform ${
+            sortConfig.key === sortKey ? "text-blue-600" : "text-gray-400"
+          } ${sortConfig.direction === "desc" ? "rotate-180" : ""}`}
+        />
       </div>
     </th>
   );
@@ -145,12 +159,12 @@ export default function ProductListTable() {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
           </div>
         </div>
 
-        {/* Loading State */}
+        {/* Loading & Empty States */}
         {loading ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="animate-pulse">
@@ -194,18 +208,13 @@ export default function ProductListTable() {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {paginatedProducts.map((product) => (
-                      <tr
-                        key={product.id}
-                        className="hover:bg-gray-50 transition-colors duration-150"
-                      >
+                      <tr key={product.id} className="hover:bg-gray-50 transition-colors duration-150">
                         <td className="px-6 py-5">
                           <div>
                             <div className="text-sm font-medium text-gray-900 line-clamp-2">
                               {product.name}
                             </div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              ID: {product.id}
-                            </div>
+                            <div className="text-xs text-gray-500 mt-1">ID: {product.id}</div>
                           </div>
                         </td>
 
@@ -253,6 +262,12 @@ export default function ProductListTable() {
 
                         <td className="px-6 py-5">
                           <div className="flex items-center justify-center gap-2">
+                            <Link to={`/admin/products/${product.id}`}>
+                              <button className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition">
+                                <Eye className="w-5 h-5" />
+                              </button>
+                            </Link>
+
                             <Link to={`/admin/products/${product.id}/edit`}>
                               <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-700 transition">
                                 <Edit className="w-5 h-5" />
@@ -260,15 +275,10 @@ export default function ProductListTable() {
                             </Link>
 
                             <button
-                              onClick={() => handleDelete(product.id)}
-                              disabled={deletingId === product.id}
-                              className="p-2 rounded-lg hover:bg-red-100 text-red-600 disabled:opacity-50 transition"
+                              onClick={() => openDeleteModal(product)}
+                              className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition"
                             >
-                              {deletingId === product.id ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                              ) : (
-                                <Trash2 className="w-5 h-5" />
-                              )}
+                              <Trash2 className="w-5 h-5" />
                             </button>
                           </div>
                         </td>
@@ -286,39 +296,20 @@ export default function ProductListTable() {
                     {Math.min(currentPage * itemsPerPage, filteredAndSortedProducts.length)} of{" "}
                     {filteredAndSortedProducts.length} products
                   </p>
-
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage(1)}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronsLeft className="w-5 h-5" />
                     </button>
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-
-                    <span className="px-4 py-2 bg-white rounded-lg text-sm font-medium">
+                    <span className="px-4 py-2 bg-white rounded-lg text-sm font-medium shadow-sm">
                       Page {currentPage} of {totalPages}
                     </span>
-
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronRight className="w-5 h-5" />
                     </button>
-                    <button
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition"
-                    >
+                    <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className="p-2 rounded-lg hover:bg-white disabled:opacity-50 transition">
                       <ChevronsRight className="w-5 h-5" />
                     </button>
                   </div>
@@ -326,6 +317,56 @@ export default function ProductListTable() {
               )}
             </div>
           </>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in fade-in zoom-in duration-200">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Delete Product?</h2>
+                <button
+                  onClick={closeDeleteModal}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="mb-8">
+                <p className="text-gray-600">
+                  Are you sure you want to delete the product
+                  <span className="font-semibold text-gray-900"> "{productToDelete?.name}"</span>?
+                </p>
+                <p className="text-sm text-red-600 mt-3">
+                  This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-6 py-3 rounded-xl font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={deletingId !== null}
+                  className="px-6 py-3 rounded-xl font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-70 disabled:cursor-not-allowed transition flex items-center gap-2"
+                >
+                  {deletingId ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete Product"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </AdminLayout>

@@ -9,7 +9,6 @@ import Home from "./pages/Home";
 import ProductList from "./pages/products/ProductList";
 import AddProduct from "./pages/products/AddProduct";
 import EditProduct from "./pages/products/EditProduct";
-import ViewProduct from "./pages/products/ViewProduct";
 import About from "./pages/About";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
@@ -47,14 +46,6 @@ export default function App() {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <AddProduct />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/products/:id"
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <ViewProduct />
               </ProtectedRoute>
             }
           />
@@ -102,7 +93,6 @@ export default function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<ProductList />} />
                     <Route path="/products/add" element={<AddProduct />} />
-                    <Route path="/products/:id" element={<ViewProduct />} />
                     <Route path="/products/:id/edit" element={<EditProduct />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/services" element={<Services />} />
